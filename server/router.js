@@ -8,15 +8,15 @@ var router = function(app) {
     //Note the common format for each page.
 
     app.get('/', function(req, res) {
-        res.status(200).sendFile(path.join(__dirname + "/../client/write-library.html"));
+        res.status(200).sendFile(path.join(__dirname + "/../client/musicnotes.html"));
     })
 
-    app.get('/write-library', function(req, res) {
-        res.status(200).sendFile(path.join(__dirname + "/../client/write-library.html"));
+    app.get('/login-musicnotes', function(req, res) {
+        res.status(200).sendFile(path.join(__dirname + "/../client/login-musicnotes.html"));
     })
 
-    app.get('/browse-library', function(req, res) {
-        res.status(200).sendFile(path.join(__dirname + "/../client/browse-library.html"));
+    app.get('/create-musicnotes', function(req, res) {
+        res.status(200).sendFile(path.join(__dirname + "/../client/create-musicnotes.html"));
     })
 
 };
