@@ -1,92 +1,86 @@
-//This file handles the database calls for the MySQL server
+const mysql = require('mysql2');
+const crypto = require("crypto");
 
-const mysql = require('mysql2');  //Import the driver
 
-//Define the connection.
 const connection = mysql.createConnection({
     host: 'localhost',
-    user: 'root',  //If not using root, replace with your user.
-    password: 'root',  //Replace with your SQL password
+    user: 'root', 
+    password: 'root', 
     database: 'musicNotes'
   });
 
-  //Create a connection
+
 connection.connect((err) => {
     if (err) throw err;
     console.log('Connected to MySQL!');
+
+    connection.query(
+    "CREATE TABLE IF NOT EXISTS users (" +
+    "userId INT AUTO_INCREMENT PRIMARY KEY, " +
+    "username VARCHAR(50) NOT NULL UNIQUE, " +
+    "passwordHash VARCHAR(255) NOT NULL, " +
+    "createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+  );
 });
 
-//Note that all the listeners go into this one function.  This function is exported.
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.scryptSync(password, salt, 64).toString("hex");
+  return salt + ":" + hash;
+}
+
+function checkPassword(password, stored) {
+  const parts = stored.split(":");
+  const test = crypto.scryptSync(password, parts[0], 64).toString("hex");
+  return crypto.timingSafeEqual(Buffer.from(parts[1], "hex"), Buffer.from(test, "hex"));
+}
+
 var services_sql = function(app) {
-    //CRUD Types:
-      //post - when doing an INSERT
-      //get - when doing a SELECT
-      //put - when doing an UPDATE
-      //delete - when doing a DELETE
 
-    //Notes:
-      //1. A listener is a unique combination of the CRUD type and the /{listener name}
-      //2. For the add record, you would call is using localhost:5000/write-record
-      //3. If you put two listeners with the same CRUD/name combination, the last one created would prevail
+    app.post('/create-account', function(req, res) {
+          const username = req.body.username;
+          const password = req.body.password;
 
+          if (!username || !password) {
+            return res.json({msg: "Please enter an email and password."});
+          }
 
-  //Add a record
-    app.post('/write-record', function(req, res) {
-        console.log('In MySQL Write Record');
-
-        var data = {
-            bookTitle: req.body.bookTitle, 
-            author: req.body.author, 
-            publisher: req.body.publisher, 
-            yearPublished: req.body.yearPublished, 
-            isbn: req.body.isbn
-        };
-
-        //Execute the query
-          connection.query("INSERT INTO books SET ?", data, function(err, results) {
-              if(err) {
-                return res.json({msg:"Error: " + err});
-              } else {
-                console.log("Inserted new record");
-                // connection.end();
-                return res.status(201).send(JSON.stringify({msg:"SUCCESS"}));
+          connection.query("INSERT INTO users (username, passwordHash) VALUES (?, ?)",
+            [username, hashPassword(password)],
+            function(err) {
+              if (err) {
+                if (err.code === "ER_DUP_ENTRY") {
+                  return res.json({msg: "That email is already registered."});
+                }
+                console.log(err);
+                return res.json({msg: "Something went wrong saving your account."});
               }
+              console.log("New account created: " + username);
+              return res.json({msg: "Account created! You can log in now."});
           });
-          
     });
 
-    //Get all the records
-    app.get('/read-records', function(req, res) {
-          connection.query("SELECT * FROM books", function(err, rows) {
-              if(err) {
-                return res.json({msg:"Error: " + err});
+    app.post('/login', function(req, res) {
+          const username = req.body.username;
+          const password = req.body.password;
 
-              } else {
-                console.log("Read Records");
-                // connection.end();
-                return res.status(201).send(JSON.stringify({msg:"SUCCESS", books:rows}));
+          if (!username || !password) {
+            return res.json({msg: "Please enter an email and password."});
+          }
+
+          connection.query("SELECT * FROM users WHERE username = ?",
+            [username],
+            function(err, rows) {
+              if (err) {
+                console.log(err);
+                return res.json({msg: "Something went wrong."});
               }
-          });    
-    });
-
-    //Delete a record
-    app.delete('/delete-record', function(req, res) {
-        //Bring in the data from the client
-        var bookId = req.body.deleteID;
-
-        //Create delete SQL string
-        var queryString = "DELETE FROM books WHERE bookId = " + bookId;
-
-        //Execute Delete
-        connection.query(queryString, function(err, rows) {
-            if(err) {
-                return res.json({msg:"Error: " + err});
-            } else {
-                // console.log("Delete Records");
-                return res.status(201).send(JSON.stringify({msg:"SUCCESS"}));
-            }
-        });    
+              if (rows.length === 0 || !checkPassword(password, rows[0].passwordHash)) {
+                return res.json({msg: "Wrong email or password."});
+              }
+              return res.json({msg: "Welcome back, " + rows[0].username + "!"});
+          });
     });
 }
 
-module.exports = services_sql;  //Exports the function (note it is imported in app.js)
+module.exports = services_sql;
