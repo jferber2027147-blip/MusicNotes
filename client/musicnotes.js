@@ -17,6 +17,11 @@ async function sendToServer(url) {
     });
     const data = await response.json();
     message.textContent = data.msg;
+
+    if (data.success) {
+  sessionStorage.setItem("username", data.username);
+  window.location.href = "/home";
+  }
   } catch (error) {
     message.textContent = "Could not reach the server.";
   }

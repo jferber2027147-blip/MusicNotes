@@ -78,7 +78,7 @@ var services_sql = function(app) {
               if (rows.length === 0 || !checkPassword(password, rows[0].passwordHash)) {
                 return res.json({msg: "Wrong email or password."});
               }
-              return res.json({msg: "Welcome back, " + rows[0].username + "!"});
+              return res.json({msg: "Welcome back, " + rows[0].username + "!", success: true, username: rows[0].username});
           });
     });
 }

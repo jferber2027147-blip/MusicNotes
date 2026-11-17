@@ -18,6 +18,9 @@ var router = function(app) {
     app.get('/create-musicnotes', function(req, res) {
         res.status(200).sendFile(path.join(__dirname + "/../client/create-musicnotes.html"));
     })
+    app.get('/home', function(req, res) {
+    res.status(200).sendFile(path.join(__dirname + "/../client/home.html"));
+    })
 
 };
 
