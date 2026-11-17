@@ -8,21 +8,61 @@
 </head>
 <body>
   <div class="top-bar">
-    <div class="welcome-area">
-      <h1>Welcome to MusicNotes</h1>
-      <p id="welcome"></p>
+    <h1 class="logo">MusicNotes</h1>
+    
+    <div class="top-actions">
+        <button class="review-btn">
+        <img src="/client/images/review-icon.png" alt="">
+        REVIEW
+      </button>
+
+      <button class="icon-btn" title="Search">
+        <img src="/client/images/search-icon.png" alt="Search">
+      </button>
+
+      <div class="profile-wrap">
+        <button class="icon-btn" id="profileBtn" title="Profile">
+          <img src="/client/images/profile-icon.png" alt="Profile">
+        </button>
+        <div class="dropdown" id="dropdown">
+          <p id="welcome"></p>
+          <button class="logout-btn" id="logoutBtn">Log Out</button>
+        </div>
+      </div>
     </div>
-    <button class="btn" id="logoutBtn">Log Out</button>
+</div>
+
+    <p class="tagline">Where Music Lovers, Enthusiasts, and Critics find Connection.</p>
+
+  <div class="panel">
+    <div class="card">
+      <a href="#" class="pill">Find Users</a>
+      <a href="#" class="pill">Invite Friends</a>
+    </div>
+    <div class="card">
+      <a href="#" class="pill">Create A Review</a>
+    </div>
+    <div class="card">
+      <a href="#" class="pill">Explore Page</a>
+    </div>
   </div>
 
   <script>
-    // Show who is logged in, or send them back to the login page
     const user = sessionStorage.getItem("username");
     if (!user) {
       window.location.href = "/";
     } else {
       document.getElementById("welcome").textContent = "Logged in as " + user;
     }
+
+    const dropdown = document.getElementById("dropdown");
+    document.getElementById("profileBtn").addEventListener("click", function (event) {
+      event.stopPropagation();
+      dropdown.classList.toggle("open");
+    });
+    document.addEventListener("click", function () {
+      dropdown.classList.remove("open");
+    });
 
     document.getElementById("logoutBtn").addEventListener("click", function () {
       sessionStorage.removeItem("username");
