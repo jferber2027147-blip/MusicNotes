@@ -9,9 +9,10 @@
 <body>
   <div class="top-bar">
     <h1 class="logo">MusicNotes</h1>
-    
+
     <div class="top-actions">
-        <button class="review-btn">
+        <button class="review-btn" onclick="window.location.href='/review'">
+            <a href="/review" class="pill">Create A Review</a>
         <img src="/client/images/review-icon.png" alt="">
         REVIEW
       </button>
@@ -26,6 +27,7 @@
         </button>
         <div class="dropdown" id="dropdown">
           <p id="welcome"></p>
+          <a href="/profile" class="menu-link">My Profile</a>
           <button class="logout-btn" id="logoutBtn">Log Out</button>
         </div>
       </div>

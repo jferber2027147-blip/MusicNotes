@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MusicNotes - Create a Review</title>
+  <link rel="stylesheet" href="/client/pages.css">
+</head>
+<body>
+  <div class="top-bar">
+    <h1 class="logo">MusicNotes</h1>
+    <a href="/home" class="bar-link">Back to Home</a>
+  </div>
+
+  <div class="form-box">
+    <h2>Create a Review</h2>
+
+    <label for="itemType">Type</label>
+    <select id="itemType">
+      <option value="Song">Song</option>
+      <option value="Album">Album</option>
+    </select>
+
+    <label for="title">Title</label>
+    <input type="text" id="title" maxlength="100" placeholder="Song or album title">
+
+    <label for="artist">Artist</label>
+    <input type="text" id="artist" maxlength="100" placeholder="Artist name">
+
+    <label for="rating">Rating</label>
+    <select id="rating">
+      <option value="5">5 - Loved it</option>
+      <option value="4">4 - Really good</option>
+      <option value="3">3 - It's okay</option>
+      <option value="2">2 - Not great</option>
+      <option value="1">1 - Didn't like it</option>
+    </select>
+
+    <label for="body">Your review</label>
+    <textarea id="body" rows="6" maxlength="2000" placeholder="Write your thoughts here..."></textarea>
+
+    <button class="submit-btn" id="submitBtn">Post Review</button>
+    <p id="message"></p>
+  </div>
+
+  <script src="/client/review.js"></script>
+</body>
+</html>

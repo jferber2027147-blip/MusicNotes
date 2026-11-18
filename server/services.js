@@ -21,6 +21,17 @@ connection.connect((err) => {
     "passwordHash VARCHAR(255) NOT NULL, " +
     "createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
   );
+    connection.query(
+    "CREATE TABLE IF NOT EXISTS reviews (" +
+    "reviewId INT AUTO_INCREMENT PRIMARY KEY, " +
+    "username VARCHAR(50) NOT NULL, " +
+    "itemType VARCHAR(10) NOT NULL, " +
+    "title VARCHAR(100) NOT NULL, " +
+    "artist VARCHAR(100) NOT NULL, " +
+    "rating INT NOT NULL, " +
+    "body TEXT NOT NULL, " +
+    "createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+  );
 });
 
 function hashPassword(password) {
@@ -81,6 +92,54 @@ var services_sql = function(app) {
               return res.json({msg: "Welcome back, " + rows[0].username + "!", success: true, username: rows[0].username});
           });
     });
+    
+        
+    app.post('/create-review', function(req, res) {
+          const username = req.body.username;
+          const itemType = req.body.itemType;
+          const title = req.body.title;
+          const artist = req.body.artist;
+          const rating = parseInt(req.body.rating, 10);
+          const body = req.body.body;
+
+          if (!username || !title || !artist || !body) {
+            return res.json({msg: "Please fill in every field."});
+          }
+          if (itemType !== "Song" && itemType !== "Album") {
+            return res.json({msg: "Invalid type."});
+          }
+          if (!(rating >= 1 && rating <= 5)) {
+            return res.json({msg: "Rating must be 1 to 5."});
+          }
+
+          connection.query(
+            "INSERT INTO reviews (username, itemType, title, artist, rating, body) VALUES (?, ?, ?, ?, ?, ?)",
+            [username, itemType, title, artist, rating, body],
+            function(err) {
+              if (err) {
+                console.log(err);
+                return res.json({msg: "Something went wrong saving your review."});
+              }
+              console.log("New review by " + username + ": " + title);
+              return res.json({msg: "Review posted!", success: true});
+          });
+    });
+
+    app.get('/user-reviews', function(req, res) {
+          const username = req.query.username;
+
+          connection.query(
+            "SELECT * FROM reviews WHERE username = ? ORDER BY createdAt DESC",
+            [username],
+            function(err, rows) {
+              if (err) {
+                console.log(err);
+                return res.json({msg: "Something went wrong.", reviews: []});
+              }
+              return res.json({reviews: rows});
+          });
+    });
+
 }
 
 module.exports = services_sql;
