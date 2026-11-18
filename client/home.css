@@ -5,7 +5,6 @@ body {
   background: white;
 }
 
-/* Blue bar across the top */
 .top-bar {
   display: flex;
   justify-content: space-between;
@@ -33,7 +32,7 @@ body {
   gap: 14px;
   padding: 12px 26px;
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   background: #d0d6f7;
   color: #1a1ab0;
   font-size: 1.1rem;

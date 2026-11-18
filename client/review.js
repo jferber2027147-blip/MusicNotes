@@ -1,6 +1,5 @@
 const message = document.getElementById("message");
 
-// Only logged-in users can post
 const user = sessionStorage.getItem("username");
 if (!user) {
   window.location.href = "/";
