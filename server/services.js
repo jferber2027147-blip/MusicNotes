@@ -193,6 +193,29 @@ var services_sql = function(app) {
             
        });
 
+    app.delete('/delete-review', function(req, res) {
+      const reviewId = req.body.reviewId;
+      const username = req.body.username;
+
+      if (!reviewId || !username) {
+        return res.json({msg: "Missing Information"});
+      }
+      
+      connection.query(
+        "DELETE FROM reviews WHERE reviewID = ? AND username = ?",
+        [reviewId, username],
+        function (err, result) {
+          if(err) {
+            console.log(err);
+            return res.json({msg: "Something went wrong deleting your review."})
+          }
+          if(result.affectedRows === 0) {
+            return res.json({msg: "Review not found."})
+          }
+          console.log("Review " + reviewId + " deleted by" + username);
+          return res.json({msg: "Review deleted.", success: true});
+        });
+    });
 }
 
 module.exports = services_sql;

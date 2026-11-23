@@ -41,7 +41,36 @@ async function loadReviews() {
       editLink.textContent = "Edit";
       editLink.className = "edit-link";
       
-      card.append(heading, stars, text, date, editLink);
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Delete";
+      deleteBtn.className = "delete-btn";
+      deleteBtn.addEventListener("click", async function () {
+        if (!confirm("Delete this review? This can't be undone.")) {
+            return;
+      }
+        try {
+        const response = await fetch("/delete-review", {
+            method: "DELETE",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ reviewId: r.reviewId, username: user })
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            card.remove();
+            if (list.children.length === 0) {
+                list.textContent = "No reviews yet. Write your first one!";
+            }
+            } else {
+                alert(result.msg);
+            }
+        } catch (error) {
+            alert("Could not reach the server.");
+        }
+    });
+
+    card.append(heading, stars, text, date, editLink, deleteBtn);
 
       list.appendChild(card);
     });
