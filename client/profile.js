@@ -35,7 +35,14 @@ async function loadReviews() {
       date.className = "date";
       date.textContent = new Date(r.createdAt).toLocaleDateString();
 
-      card.append(heading, stars, text, date);
+      const editLink = document.createElement("a");
+      
+      editLink.href = "/review?id=" + r.reviewId;
+      editLink.textContent = "Edit";
+      editLink.className = "edit-link";
+      
+      card.append(heading, stars, text, date, editLink);
+
       list.appendChild(card);
     });
   } catch (error) {

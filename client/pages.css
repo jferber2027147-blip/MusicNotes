@@ -122,3 +122,17 @@ textarea {
   font-size: 0.8rem;
   color: #222;
 }
+
+.edit-link {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 6px 16px;
+  background: white;
+  color: #1a1ab0;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.edit-link:hover {
+  opacity: 0.85;
+}

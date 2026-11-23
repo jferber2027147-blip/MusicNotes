@@ -140,6 +140,59 @@ var services_sql = function(app) {
           });
     });
 
+    app.get('/get-review', function(req, res) {
+          connection.query(
+            "SELECT * FROM reviews WHERE reviewID = ? AND username = ?",
+            [req.query.id, req.query.username],
+            function(err, rows) {
+              if (err) {
+                console.log(err);
+                return res.json({msg: "Something went wrong."});
+              }
+              if (rows.length === 0) {
+                return res.json({msg: "Review not found."});
+              }
+              return res.json({review: rows[0]});
+          });
+
+        });
+
+    app.put('/update-review', function(req, res) {
+          const reviewId = req.body.reviewId;
+          const username = req.body.username;
+          const itemType = req.body.itemType;
+          const title = req.body.title;
+          const artist = req.body.artist;
+          const rating = parseInt(req.body.rating, 10);
+          const body = req.body.body;
+
+          if (!reviewId || !username || !title || !artist || !body) {
+            return res.json({msg: "Please fill in every field."});
+          }
+          if (itemType !== "Song" && itemType !== "Album") {
+            return res.json({msg: "Invalid type."});
+          }
+          if (!(rating >= 1 && rating <= 5)) {
+            return res.json({msg: "Rating must be 1 to 5."});
+          }
+
+    connection.query(
+            "UPDATE reviews SET itemType = ?, title = ?, artist = ?, rating = ?, body = ? WHERE reviewId = ? AND username = ?",
+            [itemType, title, artist, rating, body, reviewId, username],
+            function(err, result) {
+              if (err) {
+                console.log(err);
+                return res.json({msg: "Something went wrong saving your changes."});
+              }
+              if (result.affectedRows === 0) {
+                return res.json({msg: "Review not found."});
+              }
+              console.log("Review " + reviewId + " updated by " + username);
+              return res.json({msg: "Review updated!", success: true});
+          });
+            
+       });
+
 }
 
 module.exports = services_sql;
