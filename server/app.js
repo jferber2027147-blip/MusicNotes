@@ -4,6 +4,7 @@ const cors = require('cors')  //Prevents cross origin issues
 const app = express();  //Add the express to an app object
 const path = require("path");  //For directory management
 const bodyParser = require('body-parser');  //Manages JSON messages.
+//const session = require('express-session');
 
 app.use(cors());
 
@@ -18,6 +19,11 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use("/client", express.static(path.resolve(__dirname + "/../client/")));
 
+//app.use(session({
+ // secret: 'replace-this-with-a-long-random-phrase',
+ // resave: false,
+ // saveUninitialized: false
+//}));
 
 var router = require("./router.js");  //Imports the file
 router(app);
